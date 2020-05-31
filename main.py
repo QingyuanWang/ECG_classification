@@ -27,9 +27,10 @@ torch_dataset = Data.TensorDataset(X_train, Y_train)
 loader = Data.DataLoader(
     dataset=torch_dataset,
     batch_size=100,
-    shuffle=True,  # 每次训练打乱数据， 默认为False
-    num_workers=2,  # 使用多进行程读取数据， 默认0，为不使用多进程
+    shuffle=True,
+    num_workers=2,
 )
+epoch = 10
 for i in range(epoch):
     model.train_on_dataset(loader, optimizer)
 
