@@ -7,12 +7,12 @@ label_list = [1, 2, 3, 8, 4, 7, 9, 5, 6, 31, 34, 11, 10, 12, 38, 24, 13]
 
 def process_data(window_seconds=10):
     print("Processing data...")
-    raw_dir = "./mitdb"
-    processed_dir = "./processed"
+    raw_dir = "./mitdb/"
+    # processed_dir = "./processed/"
 
     ecg_dir = os.listdir(raw_dir)
-    if not os.path.exists(processed_dir):
-        os.makedirs(processed_dir)
+    # if not os.path.exists(processed_dir):
+    #     os.makedirs(processed_dir)
 
     X = []
     Y = []
@@ -60,6 +60,5 @@ def process_data(window_seconds=10):
     np.savez_compressed('./data.npz', X=X, Y=Y)
 
 
-# process_data()
 if __name__ == "__main__":
     process_data()

@@ -76,9 +76,10 @@ class net(nn.Module):
                 loss.backward()
                 optimizer.step()
                 progress_bar.update(1)
+        return acc, loss
 
     # validation, inlcudes evaluation on validation set
-    def test_on_dataset(self, val_loader, checkpoint=None):
+    def test_on_dataset(self, test_loader, checkpoint=None):
         device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
         if checkpoint is not None:
@@ -94,7 +95,7 @@ class net(nn.Module):
 
         with torch.no_grad():
             # calculate a series of variables for evaluation
-            for batch_idx, (data, label) in enumerate(val_loader):
+            for batch_idx, (data, label) in enumerate(test_loader):
                 # original data
                 data = data.to(device)
                 # labels (0,1)
@@ -116,4 +117,4 @@ class net(nn.Module):
         # accurancy
         acc = accuracy_score(targets, preds)
 
-        return loss, acc
+        return acc, loss
