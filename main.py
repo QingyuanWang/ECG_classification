@@ -22,6 +22,7 @@ def get_args():
 
 args = get_args()
 torch.manual_seed(args.seed)
+np.random.seed(args.seed)
 device = args.device
 checkpoint_dir = args.checkpoint_dir
 if not os.path.exists(checkpoint_dir):
