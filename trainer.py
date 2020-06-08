@@ -4,10 +4,8 @@ from util import MovAvg
 
 
 class Trainer:
-    def __init__(self, model, loader_train, loader_test, optimizer):
+    def __init__(self, model, optimizer):
         self.model = model
-        self.loader_train = loader_train
-        self.loader_test = loader_test
         self.optimizer = optimizer
 
     def metric(self, preds, labels, loss, batch_size):
@@ -22,11 +20,18 @@ class Trainer:
             info[k] = info[k].item()
         return info
 
-    def train_with_val(self, loss_fn, epochs, save_path=None, save_best_only=False, monitor_on=None):
+    def train_with_val(self,
+                       loss_fn,
+                       loader_train,
+                       loader_val,
+                       epochs,
+                       save_path=None,
+                       save_best_only=False,
+                       monitor_on=None):
         best_metric = 0
         for epoch in range(epochs):
-            self.train(loss_fn, epoch, save_path)
-            info = self.test(loss_fn, epoch)
+            self.train(loader_train, loss_fn, epoch, 'Train ', save_path)
+            info = self.test(loader_val, loss_fn, epoch, 'Val ')
             if save_path is not None:
                 if not save_best_only:
                     torch.save(self.model.state_dict(), save_path)
@@ -47,12 +52,12 @@ class Trainer:
                 info_show[k] = f'{info_avg[k].get():.4f}'
             return info_show
 
-    def train(self, loss_fn, epoch=0, save_path=None):
+    def train(self, dataloader, loss_fn, epoch=-1, info='', save_path=None):
         self.model.train()
-        desc = f'Epoch #{epoch + 1}' if epoch != 0 else None
-        with tqdm(total=len(self.loader_train), desc=desc) as progress_bar:
+        desc = f'{info}Epoch #{epoch + 1}'
+        with tqdm(total=len(dataloader), desc=desc) as progress_bar:
             info_avg = {}
-            for batch_idx, (data, labels) in enumerate(self.loader_train):
+            for batch_idx, (data, labels) in enumerate(dataloader):
                 self.optimizer.zero_grad()
                 preds = self.model(data)
                 loss = loss_fn(preds, labels)
@@ -63,13 +68,13 @@ class Trainer:
                 progress_bar.update(1)
         return info_show
 
-    def test(self, loss_fn, epoch=0):
+    def test(self, dataloader, loss_fn, epoch=-1, info=''):
         self.model.eval()
-        desc = f'Epoch #{epoch + 1}' if epoch != 0 else None
+        desc = f'{info}Epoch #{epoch + 1}'
         with torch.no_grad():
-            with tqdm(total=len(self.loader_test), desc=desc) as progress_bar:
+            with tqdm(total=len(dataloader), desc=desc) as progress_bar:
                 info_avg = {}
-                for batch_idx, (data, labels) in enumerate(self.loader_test):
+                for batch_idx, (data, labels) in enumerate(dataloader):
                     preds = self.model(data)
                     loss = loss_fn(preds, labels)
                     info_show = self._update_info(preds, labels, loss, info_avg)
