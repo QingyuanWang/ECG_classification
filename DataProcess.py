@@ -5,7 +5,7 @@ import numpy as np
 label_list = [1, 2, 3, 8, 4, 7, 9, 5, 6, 31, 34, 11, 10, 12, 38, 24, 13]
 
 
-def process_data(window_seconds=10):
+def process_data(window_seconds=10, fs=360):
     print("Processing data...")
     raw_dir = "./mitdb/"
     # processed_dir = "./processed/"
@@ -29,16 +29,17 @@ def process_data(window_seconds=10):
             label = ann.label_store
             label_pos = ann.sample
 
-            window_size = window_seconds * 360
+            window_size = window_seconds * fs
 
             print('len:', len(label))
             i = 0
             while i < len(label):
                 while i < len(label) and label[i] not in label_list:
-                    cur_label = label[i]
                     i += 1
+                cur_label = label[i]
                 front_label_pos = label_pos[i]
                 rear_label_pos = label_pos[i]
+                i += 1
                 while rear_label_pos - front_label_pos < window_size and front_label_pos + window_size < p_signal.shape[
                         0] and i < len(label):
                     next_label = label[i]
