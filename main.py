@@ -19,10 +19,15 @@ def get_args():
     args = parser.parse_known_args()[0]
     return args
 
+def setup_seed(seed):
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
+    np.random.seed(seed)
+    random.seed(seed)
+    torch.backends.cudnn.deterministic = True
 
 args = get_args()
-torch.manual_seed(args.seed)
-np.random.seed(args.seed)
+setup_seed(args.seed)
 device = args.device
 checkpoint_dir = args.checkpoint_dir
 if not os.path.exists(checkpoint_dir):
