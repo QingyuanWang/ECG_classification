@@ -2,6 +2,7 @@ from cnn import net
 import numpy as np
 import torch
 import os
+import random
 from trainer import Trainer
 from dataLoader import DataLoader
 import argparse
